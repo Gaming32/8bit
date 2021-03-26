@@ -31,7 +31,7 @@ class Module(metaclass=ModuleMeta):
         self.length = length
 
     def cycle(self) -> Optional[int]:
-        return NotImplemented
+        pass
 
     def perform_cycle(self) -> None:
         result = self.cycle()

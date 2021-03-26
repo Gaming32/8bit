@@ -34,6 +34,8 @@ class ROMModule(Module):
             self.memory = base64.b64decode(base64_data)
         elif (raw_data := config.pop('raw', None)) is not None:
             self.memory = raw_data
+        else:
+            self.memory = b''
         if len(self.memory) < length:
             self.memory += secrets.token_bytes(length - len(self.memory))
         elif len(self.memory) > length:
