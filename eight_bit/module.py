@@ -19,16 +19,16 @@ class Module(metaclass=ModuleMeta):
     pointer: int
     data: int
 
-    def __init__(self, config: dict) -> None:
+    def __init__(self, **config) -> None:
         self.active = False
         self.write = False
         self.pointer = 0
         self.data = 0
-        self.init(config)
+        self.init(**config)
 
-    def init(self, config: dict) -> None:
-        self.start = config['start']
-        self.length = config['length']
+    def init(self, *, start: int, length: int, **config) -> None:
+        self.start = start
+        self.length = length
 
     def cycle(self) -> Optional[int]:
         return NotImplemented
