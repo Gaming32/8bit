@@ -7,7 +7,7 @@ def nop(comp: Computer):
 
 
 def jmp(comp: Computer):
-    comp.pc = comp.getat(comp.pc + 1) - 1
+    comp.pc = comp.getat(comp.pc + 1) * 256 + comp.getat(comp.pc + 2) - 1
 
 
 def end(comp: Computer):
@@ -79,6 +79,36 @@ def sti(comp: Computer):
     comp.setat(ptr, data)
 
 
+def adx(comp: Computer):
+    comp.accum += comp.regx
+    comp.accum %= 256
+
+
+def ady(comp: Computer):
+    comp.accum += comp.regy
+    comp.accum %= 256
+
+
+def ada(comp: Computer):
+    comp.accum += comp.accum
+    comp.accum %= 256
+
+
+def adi(comp: Computer):
+    comp.pc += 1
+    data = comp.getat(comp.pc)
+    comp.accum += data
+    comp.accum %= 256
+
+
+def add(comp: Computer):
+    comp.pc += 1
+    ptr = comp.getat(comp.pc)
+    data = comp.getat(ptr)
+    comp.accum += data
+    comp.accum %= 256
+
+
 opcodes: list[Callable[[Computer], Any]] = [
     nop,
 
@@ -95,5 +125,11 @@ opcodes: list[Callable[[Computer], Any]] = [
     stx,
     sty,
     sta,
-    sti
+    sti,
+
+    adx,
+    ady,
+    ada,
+    adi,
+    add,
 ]
