@@ -6,6 +6,14 @@ def nop(comp: Computer):
     pass
 
 
+def jmp(comp: Computer):
+    comp.pc = comp.getat(comp.pc + 1) - 1
+
+
+def end(comp: Computer):
+    comp.running = False
+
+
 def ldx_imm(comp: Computer):
     comp.pc += 1
     data = comp.getat(comp.pc)
@@ -36,7 +44,7 @@ def lda_imm(comp: Computer):
     comp.pc += 1
     data = comp.getat(comp.pc)
     comp.accum = data
-    
+
 
 def lda(comp: Computer):
     comp.pc += 1
@@ -45,13 +53,47 @@ def lda(comp: Computer):
     comp.accum = data
 
 
+def stx(comp: Computer):
+    comp.pc += 1
+    ptr = comp.getat(comp.pc)
+    comp.setat(ptr, comp.regx)
+
+
+def sty(comp: Computer):
+    comp.pc += 1
+    ptr = comp.getat(comp.pc)
+    comp.setat(ptr, comp.regy)
+
+
+def sta(comp: Computer):
+    comp.pc += 1
+    ptr = comp.getat(comp.pc)
+    comp.setat(ptr, comp.accum)
+
+
+def sti(comp: Computer):
+    comp.pc += 1
+    ptr = comp.getat(comp.pc)
+    comp.pc += 1
+    data = comp.getat(comp.pc)
+    comp.setat(ptr, data)
+
+
 opcodes: list[Callable[[Computer], Any]] = [
     nop,
+
+    jmp,
+    end,
 
     ldx_imm,
     ldx,
     ldy_imm,
     ldy,
     lda_imm,
-    lda
+    lda,
+
+    stx,
+    sty,
+    sta,
+    sti
 ]

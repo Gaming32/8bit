@@ -11,7 +11,7 @@ class RAMModule(Module):
 
     def init(self, *, length: int, **config) -> None:
         super().init(length=length, **config)
-        self.data = bytearray(secrets.token_bytes(length))
+        self.memory = bytearray(secrets.token_bytes(length))
 
     def cycle(self) -> Optional[int]:
         if not self.active:

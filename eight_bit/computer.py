@@ -17,6 +17,7 @@ class Computer:
 
     write: bool
     _pointer: int
+    data: int
 
     cur_module: Module
 
@@ -39,6 +40,7 @@ class Computer:
         self.regy = random.randrange(256)
         self.accum = random.randrange(256)
         self.pointer = random.randrange(65536)
+        self.data = random.randrange(256)
         self.write = False
         self.running = True
     
@@ -60,12 +62,18 @@ class Computer:
         self.fullcycle()
         return self.cur_module.data
 
+    def setat(self, ptr: int, data: int):
+        self.write = True
+        self.pointer = ptr
+        self.data = data
+        self.fullcycle()
+        return self.cur_module.data
+
     def fullcycle(self, data: Optional[int] = None):
         for module in self.modules:
             module.active = module is self.cur_module
             module.write = self.write
-            if data is not None:
-                module.data = data
+            module.data = self.data
             if module.active:
                 module.pointer = self._pointer - module.start
             module.perform_cycle()
@@ -84,6 +92,12 @@ if __name__ == '__main__':
     pc = Computer([
         IOModule(start=0, length=2),
         RAMModule(start=2, length=0x7ffe),
-        ROMModule(start=0x8000, length=0x8000, raw=b'\x00')
+        ROMModule(start=0x8000, length=0x8000, raw=(
+            b'\x0c\x01\x01' # sti $01 #$01
+            b'\x03\x00'     # ldx #$00
+            b'\x05\x01'     # ldy #$01
+            b'\x09\x00'     # stx $00
+            b'\x02'         # end
+        ))
     ])
     pc.run()
