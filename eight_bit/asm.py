@@ -81,6 +81,21 @@ def parse(code: str) -> bytes:
 
 
 if __name__ == '__main__':
-    with open('fib.asm') as fp:
-        contents = fp.read()
-    print(parse(contents))
+    import sys
+    import os
+    if len(sys.argv) == 1:
+        print('Usage: python -m eight_bit.asm <input_asm> [out_file]')
+        exit()
+    try:
+        if len(sys.argv) == 2:
+            infile = sys.argv[1]
+            outfile = os.fdopen(sys.stdout.fileno(), 'wb')
+        else:
+            infile = sys.argv[1]
+            outfile = open(sys.argv[2], 'wb')
+        with open(infile) as fp:
+            contents = fp.read()
+        outfile.write(parse(contents))
+    finally:
+        if outfile.fileno() != sys.stdout.fileno():
+            outfile.close()
