@@ -43,7 +43,7 @@ class Computer:
         self.data = random.randrange(256)
         self.write = False
         self.running = True
-    
+
     @property
     def pointer(self) -> int:
         return self._pointer

@@ -84,3 +84,6 @@ class IOModule(Module):
                 self.mode = self.data & 0b01
         else:
             return self.read()
+
+
+__all__ = ['IOModule', 'RAMModule', 'ROMModule']
