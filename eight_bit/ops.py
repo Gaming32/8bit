@@ -160,7 +160,7 @@ def add2(comp: Computer):
     comp.accum %= 256
 
 
-opcodes: list[Callable[[Computer], Any]] = [
+opcodes: list[Callable[[Computer], None]] = [
     nop,
 
     jmp,

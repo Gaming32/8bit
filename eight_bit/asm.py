@@ -1,0 +1,86 @@
+import ast
+import string
+from io import StringIO, BytesIO
+
+
+def parse_number(val: str) -> tuple[bool, int]:
+    """Returns (is_address, value)"""
+    i = len(val) - 1
+    while i >= 0:
+        if val[i] not in string.digits:
+            break
+        i -= 1
+    i += 1
+    directives, raw = val[:i], val[i:]
+    if '$' in directives or 'h' in directives:
+        base = 16
+    elif '%' in directives or 'b' in directives:
+        base = 2
+    elif 'o' in directives:
+        base = 8
+    else:
+        base = 10
+    is_address = '#' not in directives
+    return is_address, int(raw, base)
+
+
+def parse_literal(val: str, labels: dict[str, int], constants: dict[str, str]) -> tuple[bool, int]:
+    """Returns (is_address, value)"""
+    if val[0] == "'" and val[-1] == "'":
+        res = ast.literal_eval('b' + val)
+        if len(res) != 1:
+            raise ValueError('char literal cannot have more than one character')
+        return False, res[0]
+    elif val in constants:
+        return parse_literal(constants[val], labels, constants)
+    elif val in labels:
+        return True, labels[val]
+    return parse_number(val)
+
+
+def parse(code: str) -> bytes:
+    from eight_bit.asm_symbols import symbols
+    labels = {}
+    constants = {}
+    result = BytesIO(b'\0' * 65536)
+    offset = 0
+
+    for line in StringIO(code):
+        line = line.rstrip()
+        stripped = line.lstrip().split(';', 1)[0].rstrip() # Strip comments
+        if not stripped: # Skip empty/comment lines
+            continue
+
+        elif line[0] == '.': # Interpret compiler directives
+            if ' ' in stripped:
+                directive, arg = stripped[1:].split(' ', 1)
+            else:
+                directive, arg = stripped[1:], ''
+            if directive == 'offset':
+                offset = parse_number(arg)[1]
+            elif directive == 'length':
+                result.truncate(parse_number(arg)[1])
+            elif directive == 'truncate':
+                result.truncate(result.tell())
+            elif directive == 'org':
+                result.seek(parse_number(arg)[1])
+
+        elif line[0] in string.whitespace: # Interpret symbols
+            name, args = stripped.split(' ', 1)
+            symbols[name](name, args, result, labels, constants)
+
+        elif line[-1] == ':': # Interpret labels
+            label_name = stripped.rstrip(':')
+            labels[label_name] = offset + result.tell()
+
+        elif '=' in line: # Interpret constants
+            name, value = stripped.split('=', 1)
+            constants[name.strip()] = value.strip()
+
+    return result.getvalue()
+
+
+if __name__ == '__main__':
+    with open('fib.asm') as fp:
+        contents = fp.read()
+    print(parse(contents))
