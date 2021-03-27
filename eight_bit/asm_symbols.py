@@ -96,6 +96,12 @@ def add_reg(name: str, args: str, result: BytesIO, labels: dict[str, int], const
         op = b'\x16'
     elif name == 'ada':
         op = b'\x17'
+    elif name == 'sbx':
+        op = b'\x1b'
+    elif name == 'sby':
+        op = b'\x1c'
+    elif name == 'sba':
+        op = b'\x1d'
     else:
         raise ValueError(f'no add operator called {name}')
     result.write(op)
@@ -105,7 +111,11 @@ def adi(name: str, args: str, result: BytesIO, labels: dict[str, int], constants
     was_addr, value = parse_literal(args, labels, constants)
     if was_addr:
         raise ValueError(f'argument to adi must not be an address')
-    result.write(b'\x18')
+    if name == 'adi':
+        op = b'\x18'
+    else:
+        op = b'\x1e'
+    result.write(op)
     write_value(value, result)
 
 
@@ -113,7 +123,11 @@ def add(name: str, args: str, result: BytesIO, labels: dict[str, int], constants
     was_addr, address = parse_literal(args, labels, constants)
     if not was_addr:
         raise ValueError('argument to add must be address')
-    write_address(address, result, b'\x19', b'\x1a')
+    if name == 'add':
+        ops = (b'\x19', b'\x1a')
+    else:
+        ops = (b'\x1f', b'\x20')
+    write_address(address, result, *ops)
 
 
 symbols: dict[str, Callable[[str, str, BytesIO, dict[str, int], dict[str, str]], None]] = {
@@ -136,4 +150,10 @@ symbols: dict[str, Callable[[str, str, BytesIO, dict[str, int], dict[str, str]],
     'ada': add_reg,
     'adi': adi,
     'add': add,
+
+    'sbx': add_reg,
+    'sby': add_reg,
+    'sba': add_reg,
+    'sbi': adi,
+    'sub': add,
 }

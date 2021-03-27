@@ -7,7 +7,7 @@ def parse_number(val: str) -> tuple[bool, int]:
     """Returns (is_address, value)"""
     i = len(val) - 1
     while i >= 0:
-        if val[i] not in string.digits:
+        if val[i] not in string.hexdigits:
             break
         i -= 1
     i += 1
@@ -62,13 +62,24 @@ def parse(code: str) -> bytes:
                 result.truncate(parse_number(arg)[1])
             elif directive == 'truncate':
                 result.truncate(result.tell())
+            elif directive == 'put':
+                putval = ast.literal_eval(arg)
+                if isinstance(putval, int):
+                    result.write(putval.to_bytes((putval.bit_length() + 7) // 8, 'big', signed=False))
+                elif isinstance(putval, str):
+                    result.write(putval.encode('utf-8'))
+                else:
+                    result.write(putval)
             elif directive == 'org':
                 dest = parse_number(arg)[1]
                 result.seek(dest)
                 offset = dest
 
         elif line[0] in string.whitespace: # Interpret symbols
-            name, args = stripped.split(' ', 1)
+            if ' ' in stripped:
+                name, args = stripped.split(' ', 1)
+            else:
+                name, args = stripped, ''
             symbols[name](name, args, result, labels, constants)
 
         elif line[-1] == ':': # Interpret labels

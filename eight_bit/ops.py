@@ -126,16 +126,19 @@ def sti2(comp: Computer):
 
 def adx(comp: Computer):
     comp.accum += comp.regx
+    comp.overflow = comp.accum > 255
     comp.accum %= 256
 
 
 def ady(comp: Computer):
     comp.accum += comp.regy
+    comp.overflow = comp.accum > 255
     comp.accum %= 256
 
 
 def ada(comp: Computer):
     comp.accum += comp.accum
+    comp.overflow = comp.accum > 255
     comp.accum %= 256
 
 
@@ -143,6 +146,7 @@ def adi(comp: Computer):
     comp.pc += 1
     data = comp.getat(comp.pc)
     comp.accum += data
+    comp.overflow = comp.accum > 255
     comp.accum %= 256
 
 
@@ -150,6 +154,7 @@ def add(comp: Computer):
     ptr = getat_pages(comp)
     data = comp.getat(ptr)
     comp.accum += data
+    comp.overflow = comp.accum > 255
     comp.accum %= 256
 
 
@@ -157,6 +162,49 @@ def add2(comp: Computer):
     ptr = getat_pages(comp, True)
     data = comp.getat(ptr)
     comp.accum += data
+    comp.overflow = comp.accum > 255
+    comp.accum %= 256
+
+
+def sbx(comp: Computer):
+    comp.accum -= comp.regx
+    comp.overflow = comp.accum < 0
+    comp.accum %= 256
+
+
+def sby(comp: Computer):
+    comp.accum -= comp.regy
+    comp.overflow = comp.accum < 0
+    comp.accum %= 256
+
+
+def sba(comp: Computer):
+    comp.accum -= comp.accum
+    comp.overflow = comp.accum < 0
+    comp.accum %= 256
+
+
+def sbi(comp: Computer):
+    comp.pc += 1
+    data = comp.getat(comp.pc)
+    comp.accum -= data
+    comp.overflow = comp.accum < 0
+    comp.accum %= 256
+
+
+def sub(comp: Computer):
+    ptr = getat_pages(comp)
+    data = comp.getat(ptr)
+    comp.accum -= data
+    comp.overflow = comp.accum < 0
+    comp.accum %= 256
+
+
+def sub2(comp: Computer):
+    ptr = getat_pages(comp, True)
+    data = comp.getat(ptr)
+    comp.accum -= data
+    comp.overflow = comp.accum < 0
     comp.accum %= 256
 
 
@@ -193,4 +241,11 @@ opcodes: list[Callable[[Computer], None]] = [
     adi,
     add,
     add2,
+
+    sbx,
+    sby,
+    sba,
+    sbi,
+    sub,
+    sub2,
 ]

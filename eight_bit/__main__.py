@@ -15,6 +15,7 @@ argument_parser = argparse.ArgumentParser(f'{python_executable} -m eight_bit')
 argument_parser.add_argument('-m', '--module', action='append', dest='modules', default=[], metavar='MODULE', help='add another module by name (python_module:class_name)')
 argument_parser.add_argument('-l', '--library', action='append', dest='libraries', default=[], metavar='MODULE', help='add another module by name (python_module:class_name)')
 argument_parser.add_argument('-s', '--simple', action='store_true', help="don't include standard library modules (IO, RAM, and ROM)")
+argument_parser.add_argument('-v', '--verbose', action='store_true', help='display each instruction before it executes')
 argument_parser.add_argument('ini', metavar='INI', help='the ini file that contains the running configuration')
 
 
@@ -58,7 +59,7 @@ def main(argv: Optional[list[str]] = None):
         start = int(mod_config.pop('start'), 0)
         length = int(mod_config.pop('length'), 0)
         pc_modules[mod_config_name] = mod_type(start=start, length=length, **mod_config)
-    computer = Computer(list(pc_modules.values()))
+    computer = Computer(list(pc_modules.values()), debug=args.verbose)
     computer.run()
 
 

@@ -19,11 +19,14 @@ class Computer:
     _pointer: int
     data: int
 
+    overflow: bool
+
     cur_module: Module
 
     running: bool
+    debug: bool
 
-    def __init__(self, modules: list[Module]) -> None:
+    def __init__(self, modules: list[Module], debug: bool = False) -> None:
         self.modules = []
         self.memory_indices = []
         for module in modules:
@@ -32,6 +35,7 @@ class Computer:
             self.memory_indices.insert(pos, module.start)
             self.memory_indices.insert(pos + 1, module.start + module.length)
         self.reset()
+        self.debug = debug
 
     def reset(self, pc: int = 0x8000, sp: int = 0x7000):
         self.pc = 0x8000
@@ -42,6 +46,7 @@ class Computer:
         self.pointer = random.randrange(65536)
         self.data = random.randrange(256)
         self.write = False
+        self.overflow = False
         self.running = True
 
     @property
@@ -83,6 +88,8 @@ class Computer:
         while self.running:
             opcode = self.getat(self.pc)
             func = opcodes[opcode % len(opcodes)]
+            if self.debug:
+                print(f'  DEBUG: {hex(opcode)} = {func.__name__} @ {hex(self.pc)}')
             func(self)
             self.pc += 1
 
