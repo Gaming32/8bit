@@ -94,24 +94,23 @@ if __name__ == '__main__':
         RAMModule(start=2, length=0x7ffe),
         ROMModule(start=0x8000, length=0x8000, raw=(
             # init
-            b'\x03\x00'     # ldx #$00
-            b'\x05\x01'     # ldy #$01
+            b'\x04\x00'     # ldx #$00
+            b'\x07\x01'     # ldy #$01
             # print
-            b'\x0c\x01\x01' # sti $01 #$01
-            b'\x09\x00'     # stx $00
-            b'\x0c\x01\x00' # sti $01 #$00
-            b'\x0c\x00\x0a' # sti $00 #$0a
+            b'\x10\x01\x01' # sti $01 #$01
+            b'\x0d\x00'     # stx $00
+            b'\x10\x01\x00' # sti $01 #$00
+            b'\x10\x00\x0a' # sti $00 #$0a
             # calculate
-            b'\x09\x02'     # stx $02
-            b'\x0a\x03'     # sty $03
-            b'\x04\x03'     # ldx $03
-            b'\x08\x02'     # lda $02
-            b'\x11\x03'     # add $03
-            b'\x0b\x02'     # sta $02
-            b'\x06\x02'     # ldy $02
+            b'\x0d\x02'     # stx $02
+            b'\x0e\x03'     # sty $03
+            b'\x05\x03'     # ldx $03
+            b'\x0b\x02'     # lda $02
+            b'\x19\x03'     # add $03
+            b'\x0f\x02'     # sta $02
+            b'\x08\x02'     # ldy $02
             # loop
-            b'\x01\x80\x04' # jmp $8004
-            b'\x02'         # end
+            b'\x02\x80\x04' # jmp $8004
         ))
     ])
     pc.run()
