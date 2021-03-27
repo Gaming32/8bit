@@ -63,7 +63,9 @@ def parse(code: str) -> bytes:
             elif directive == 'truncate':
                 result.truncate(result.tell())
             elif directive == 'org':
-                result.seek(parse_number(arg)[1])
+                dest = parse_number(arg)[1]
+                result.seek(dest)
+                offset = dest
 
         elif line[0] in string.whitespace: # Interpret symbols
             name, args = stripped.split(' ', 1)

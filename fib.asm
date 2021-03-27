@@ -1,7 +1,7 @@
 .offset $8000
 
-FIRST_VALUE = #0
-SECOND_VALUE = #1
+FIRST_VALUE = #0  ; First Fibonacci number
+SECOND_VALUE = #1 ; Second Fibonacci number
 
 init:
     ldx FIRST_VALUE
